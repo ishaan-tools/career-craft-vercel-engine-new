@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Executive Career GTM Engine</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between h-16 items-center">
+            <h1 class="text-lg font-bold text-indigo-600">Executive GTM Engine</h1>
+            <nav class="flex gap-6 text-sm font-medium">
+                <button onclick="switchTab('evaluator')" id="btn-evaluator" class="text-indigo-600 border-b-2 border-indigo-600 pb-1">Job Evaluator</button>
+                <button onclick="switchTab('profiles')" id="btn-profiles" class="text-slate-600 hover:text-indigo-600">Profiles Manager</button>
+                <button onclick="switchTab('builder')" id="btn-builder" class="text-slate-600 hover:text-indigo-600">Application Builder</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-8">
+        <!-- Tab 1: Evaluator -->
+        <section id="tab-evaluator" class="space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs">
+            <h2 class="text-xl font-bold text-slate-800">Stage 1: Job Evaluation</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" id="company-name" placeholder="Company Name (e.g., Backcountry)" class="p-3 border border-slate-200 rounded-xl text-sm">
+                <input type="text" id="job-title" placeholder="Job Title (e.g., VP Performance Marketing)" class="p-3 border border-slate-200 rounded-xl text-sm">
+            </div>
+            <textarea id="job-description" rows="6" placeholder="Paste full Job Description here..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
+            <textarea id="optional-insights" rows="3" placeholder="Optional personal insights..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
+            <button onclick="alert('Connected to cloud engine! Ready for Vercel deployment.')" class="bg-indigo-600 text-white font-medium px-6 py-3 rounded-xl text-sm">Run Evaluation</button>
+        </section>
+
+        <!-- Tab 2: Profiles Manager -->
+        <section id="tab-profiles" class="hidden space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs">
+            <h2 class="text-xl font-bold text-slate-800">Profiles Manager</h2>
+            <input type="text" id="profile-name" placeholder="Profile Variant Name (e.g., Director Digital Marketing)" class="w-full p-3 border border-slate-200 rounded-xl text-sm">
+            <textarea id="profile-resume" rows="8" placeholder="Paste tailored master CV text..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
+            <button onclick="alert('Profile saved!')" class="bg-slate-900 text-white px-6 py-3 rounded-xl text-sm">Save Profile</button>
+        </section>
+
+        <!-- Tab 3: Builder -->
+        <section id="tab-builder" class="hidden space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs">
+            <h2 class="text-xl font-bold text-slate-800">Application Builder Pipeline</h2>
+            <p class="text-sm text-slate-500">Stages (Form Chatbot, Executive Value Deck, Outreach, Interview Prep) will unlock here per application.</p>
+        </section>
+    </main>
+
+    <script>
+        function switchTab(tab) {
+            ['evaluator', 'profiles', 'builder'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`btn-${t}`).className = "text-slate-600 hover:text-indigo-600";
+            });
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`btn-${tab}`).className = "text-indigo-600 border-b-2 border-indigo-600 pb-1";
+        }
+    </script>
+</body>
+</html>
