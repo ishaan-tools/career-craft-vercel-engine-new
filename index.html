@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <title>Executive Career GTM Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased">
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 flex justify-between h-16 items-center">
             <h1 class="text-lg font-bold text-indigo-600">Executive GTM Engine</h1>
             <nav class="flex gap-6 text-sm font-medium">
-                <button onclick="switchTab('evaluator')" id="btn-evaluator" class="text-indigo-600 border-b-2 border-indigo-600 pb-1">Job Evaluator</button>
-                <button onclick="switchTab('profiles')" id="btn-profiles" class="text-slate-600 hover:text-indigo-600">Profiles Manager</button>
-                <button onclick="switchTab('builder')" id="btn-builder" class="text-slate-600 hover:text-indigo-600">Application Builder</button>
+                <button onclick="switchTab('evaluator')" id="btn-evaluator" class="text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer">Job Evaluator</button>
+                <button onclick="switchTab('profiles')" id="btn-profiles" class="text-slate-600 hover:text-indigo-600 cursor-pointer">Profiles Manager</button>
+                <button onclick="switchTab('builder')" id="btn-builder" class="text-slate-600 hover:text-indigo-600 cursor-pointer">Application Builder</button>
             </nav>
         </div>
     </header>
@@ -20,28 +21,36 @@
     <main class="max-w-4xl mx-auto px-6 py-8">
         <!-- Tab 1: Evaluator -->
         <section id="tab-evaluator" class="space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs">
-            <h2 class="text-xl font-bold text-slate-800">Stage 1: Job Evaluation</h2>
+            <h2 class="text-xl font-bold text-slate-800">Stage 1: Job Evaluation & GTM Setup</h2>
             <div class="grid grid-cols-2 gap-4">
-                <input type="text" id="company-name" placeholder="Company Name (e.g., Backcountry)" class="p-3 border border-slate-200 rounded-xl text-sm">
+                <input type="text" id="company-name" placeholder="Company Name (e.g., Mistplay)" class="p-3 border border-slate-200 rounded-xl text-sm">
                 <input type="text" id="job-title" placeholder="Job Title (e.g., VP Performance Marketing)" class="p-3 border border-slate-200 rounded-xl text-sm">
             </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Select Target Profile Variant</label>
+                <select id="profile-selector" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-white">
+                    <option value="">Loading profiles...</option>
+                </select>
+            </div>
             <textarea id="job-description" rows="6" placeholder="Paste full Job Description here..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
-            <textarea id="optional-insights" rows="3" placeholder="Optional personal insights..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
-            <button onclick="alert('Connected to cloud engine! Ready for Vercel deployment.')" class="bg-indigo-600 text-white font-medium px-6 py-3 rounded-xl text-sm">Run Evaluation</button>
+            <textarea id="optional-insights" rows="3" placeholder="Optional personal insights (category knowledge, metrics)..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
+            <button onclick="runEvaluation()" id="eval-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl text-sm cursor-pointer transition">Run Evaluation & Initialize Pipeline</button>
+            <div id="eval-output" class="mt-6 prose prose-slate max-w-none text-sm"></div>
         </section>
 
         <!-- Tab 2: Profiles Manager -->
         <section id="tab-profiles" class="hidden space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs">
-            <h2 class="text-xl font-bold text-slate-800">Profiles Manager</h2>
-            <input type="text" id="profile-name" placeholder="Profile Variant Name (e.g., Director Digital Marketing)" class="w-full p-3 border border-slate-200 rounded-xl text-sm">
-            <textarea id="profile-resume" rows="8" placeholder="Paste tailored master CV text..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
-            <button onclick="alert('Profile saved!')" class="bg-slate-900 text-white px-6 py-3 rounded-xl text-sm">Save Profile</button>
+            <h2 class="text-xl font-bold text-slate-800">Profiles Manager (Target Roles)</h2>
+            <input type="text" id="new-profile-name" placeholder="Profile Title (e.g., Director Digital Marketing)" class="w-full p-3 border border-slate-200 rounded-xl text-sm">
+            <textarea id="new-resume-text" rows="8" placeholder="Paste tailored master CV text for this role variant..." class="w-full p-3 border border-slate-200 rounded-xl text-sm"></textarea>
+            <button onclick="saveProfile()" class="bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-3 rounded-xl text-sm cursor-pointer transition">Save Profile to Cloud DB</button>
+            <div id="profiles-list" class="mt-4 space-y-2 text-sm text-slate-600"></div>
         </section>
 
         <!-- Tab 3: Builder -->
         <section id="tab-builder" class="hidden space-y-6 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs">
             <h2 class="text-xl font-bold text-slate-800">Application Builder Pipeline</h2>
-            <p class="text-sm text-slate-500">Stages (Form Chatbot, Executive Value Deck, Outreach, Interview Prep) will unlock here per application.</p>
+            <p class="text-sm text-slate-500">Your evaluated applications and follow-up stages will appear here.</p>
         </section>
     </main>
 
@@ -49,11 +58,101 @@
         function switchTab(tab) {
             ['evaluator', 'profiles', 'builder'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`btn-${t}`).className = "text-slate-600 hover:text-indigo-600";
+                document.getElementById(`btn-${t}`).className = "text-slate-600 hover:text-indigo-600 cursor-pointer";
             });
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`btn-${tab}`).className = "text-indigo-600 border-b-2 border-indigo-600 pb-1";
+            document.getElementById(`btn-${tab}`).className = "text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer";
+            if (tab === 'profiles') loadProfiles();
         }
+
+        async function loadProfiles() {
+            const res = await fetch('/api/profiles');
+            const profiles = await res.json();
+            const selector = document.getElementById('profile-selector');
+            const list = document.getElementById('profiles-list');
+            
+            selector.innerHTML = '';
+            list.innerHTML = '<h3 class="font-semibold text-slate-700">Existing Saved Profiles:</h3>';
+            
+            if (profiles.length === 0) {
+                selector.innerHTML = '<option value="">No profiles found. Create one in Profiles Manager tab.</option>';
+                list.innerHTML += '<p class="text-xs text-slate-400">None yet.</p>';
+                return;
+            }
+
+            profiles.forEach(p => {
+                selector.innerHTML += `<option value="${p.id}">${p.profile_name}</option>`;
+                list.innerHTML += `<div class="p-3 bg-slate-50 border border-slate-100 rounded-lg">✅ ${p.profile_name}</div>`;
+            });
+        }
+
+        async function saveProfile() {
+            const profileName = document.getElementById('new-profile-name').value;
+            const resumeText = document.getElementById('new-resume-text').value;
+            if (!profileName || !resumeText) return alert('Please fill in both fields.');
+
+            const res = await fetch('/api/profiles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profileName, resumeText })
+            });
+            if (res.ok) {
+                alert('Profile saved successfully!');
+                document.getElementById('new-profile-name').value = '';
+                document.getElementById('new-resume-text').value = '';
+                loadProfiles();
+            } else {
+                alert('Error saving profile.');
+            }
+        }
+
+        async function runEvaluation() {
+            const companyName = document.getElementById('company-name').value;
+            const jobTitle = document.getElementById('job-title').value;
+            const profileId = document.getElementById('profile-selector').value;
+            const jobDescription = document.getElementById('job-description').value;
+            const optionalInsights = document.getElementById('optional-insights').value;
+
+            if (!companyName || !jobTitle || !profileId || !jobDescription) {
+                return alert('Please fill out all required fields and select a profile.');
+            }
+
+            const btn = document.getElementById('eval-btn');
+            btn.innerText = 'Analyzing JD & Matching Profile...';
+            btn.disabled = true;
+
+            const res = await fetch('/api/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profileId, companyName, jobTitle, jobDescription, optionalInsights })
+            });
+
+            const data = await res.json();
+            btn.innerText = 'Run Evaluation & Initialize Pipeline';
+            btn.disabled = false;
+
+            if (data.success) {
+                const report = data.application.stage_1_output;
+                document.getElementById('eval-output').innerHTML = marked.parse(`
+### Evaluation Complete! (Saved to Supabase)
+- **Match Rate:** ${report.matchRate}%
+- **Key Focus:** ${report.keyFocus}
+- **Expected Salary:** ${report.expectedSalary}
+- **Job Type:** ${report.jobType}
+
+#### Strategic Summary
+${report.strategicSummary}
+
+#### Gaps to Address
+${report.gapsToAddress.map(g => `- ${g}`).join('\n')}
+                `);
+            } else {
+                alert('Evaluation error: ' + data.error);
+            }
+        }
+
+        // Load profiles on startup
+        loadProfiles();
     </script>
 </body>
 </html>
