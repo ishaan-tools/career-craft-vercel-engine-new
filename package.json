@@ -1,0 +1,9 @@
+{
+  "name": "executive-career-engine",
+  "version": "1.0.0",
+  "description": "Executive GTM Engine",
+  "main": "index.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
